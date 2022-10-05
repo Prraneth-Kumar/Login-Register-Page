@@ -12,8 +12,9 @@ import SwiftyJSON
 let lightGreyColor = Color(red: 239.0/255.0, green: 243.0/255.0, blue: 244.0/255.0, opacity: 1.0)
 
 struct ExtractedView: View {
+    var text = ""
     var body: some View {
-        Text("Welcome!")
+        Text(text)
             .font(.largeTitle)
             .fontWeight(.semibold)
             .padding(.bottom, 20)
@@ -28,16 +29,20 @@ struct ContentView: View {
     @State var status: Bool = false
     @State var mess: String = ""
     @State private var animationAmount = 0.0
+    @State var bolVal: Bool = false
 
     var body: some View {
-       LoginView()
+      // LoginView()
 
         NavigationStack{
             NavigationLink(destination: LoginView(),
                            isActive: $isLoggedIn) {
             }
+            NavigationLink(destination: LoginView(),
+                           isActive: $bolVal) {
+            }
             VStack {
-                ExtractedView()
+                ExtractedView(text: "Welcome!")
                 //LoginView(isLoggedIn:$isLoggedIn)
                 TextField("Username", text: $username)
                     .padding()
@@ -67,11 +72,9 @@ struct ContentView: View {
                     Alert(
                         title: Text("User Details"),
                         message: Text("\(mess)"),
-                        primaryButton: .cancel(Text("Cancel")),
-                        secondaryButton: .destructive(Text("Okay")){
-                            withAnimation(.interpolatingSpring(stiffness: 20, damping: 20)) {
-                                animationAmount += 360
-                            }
+                        primaryButton: .destructive(Text("Cancel")),
+                        secondaryButton: .cancel(Text("Sign Up")){
+                            bolVal = true
                         }
                     )
                 }.rotation3DEffect(.degrees(animationAmount), axis: (x: 10, y: 10, z: 30))
@@ -106,98 +109,113 @@ struct ContentView: View {
 
 struct LoginView: View {
     
+    @State private var firstName: String = ""
+    @State private var secondName: String = ""
+    
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var conformpassword: String = ""
+    
+    
+    @State var status: Bool = false
+    @State var mess: String = ""
+    
+    
     let verticalPaddingForForm = 40
-   // @Binding var isLoggedIn: Bool
+    // @Binding var isLoggedIn: Bool
     
     @State private var animationAmount = 0.0
-
+    
     
     var body: some View {
         
-        
-        
-        
-        ZStack {
-            Color(red: 20/225.0 ,green: 22/225.0 , blue: 25/225.0)
-            
-            VStack(alignment: .leading, spacing: 0) {
-                Image("logo")
-                    .resizable()
-                    .scaledToFit()
-                    .padding(.top, 150)
-                    .padding()
-            }
-            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
-            .ignoresSafeArea(.all)
-            
-            VStack(spacing: CGFloat(verticalPaddingForForm)) {
-                
-                VStack {
-                    TextField("Email", text: $email)
-                        .padding(.horizontal, 15).padding(.top, 50)
-                    Divider()
-                        .padding(.horizontal, 15)
-                    SecureField("Password", text: $password)
-                        .padding(.horizontal, 15).padding(.top, 20)
-                    Divider()
-                        .padding(.horizontal, 15)
-                    
-                }
-                .background(Color(.white))
-                
-                
-                Link("Forgotten Password",
-                     destination: URL(string: "https://www.google.co.uk")!)
-                .foregroundColor(.blue)
-                .font(.system(size: 15))
-                
-                
-                Button(action: {
-                    
-                    //Do login stuff here and if true switch view to to MainContentView
-                    
-                    
-                }) {
-                    Text("Login")
-                        .padding()
-                        .font(.system(size: 20))
-                    
-                }
-                .background(Color.black)
-                .foregroundColor(Color.white)
-                .cornerRadius(10)
-                .padding(.top, 0)
-                .padding(.bottom, 20)
-                
-            }
-            .padding(.horizontal, CGFloat(verticalPaddingForForm))
-            .background(Color(.white))
-            
-            VStack{
-                Spacer()
-                Button(action: {
-                    withAnimation(.interpolatingSpring(stiffness: 1, damping: 1)) {
-                        animationAmount += 360
-                    }
-                }) {
-                    Text("Register")
-                        .padding()
-                        .font(.system(size: 40))
-                    
-                    
-                }
-                .background(.red)
-                .foregroundColor(Color.white)
-                .cornerRadius(10)
+        VStack {
+            ExtractedView(text: "User Registration")
+            //LoginView(isLoggedIn:$isLoggedIn)
+            TextField("Enter First Name", text: $firstName)
                 .padding()
-                .rotation3DEffect(.degrees(animationAmount), axis: (x: 10, y: 10, z: 30))
+                .background(lightGreyColor)
+            
+                .cornerRadius(5.0)
+                .padding(.bottom, 20)
+            TextField("Enter Second Name", text: $secondName)
+                .padding()
+                .background(lightGreyColor)
+            
+                .cornerRadius(5.0)
+                .padding(.bottom, 20)
+            TextField("Email", text: $email)
+                .padding()
+                .background(lightGreyColor)
+            
+                .cornerRadius(5.0)
+                .padding(.bottom, 20)
+            SecureField("Password", text: $password)
+                .padding()
+                .background(lightGreyColor)
+                .cornerRadius(5.0)
+                .padding(.bottom, 20)
+            SecureField("Conform Password", text: $conformpassword)
+                .padding()
+                .background(lightGreyColor)
+                .cornerRadius(5.0)
+                .padding(.bottom, 20)
+            
+            //action: {print("Button tapped")}
+            
+            
+            Button() {
+               // getuserRegistration(email: username, password: password)
+                getuserRegistration(FirNam: firstName,SecNam: secondName, EmaID: email, Pass: password, ConPass: conformpassword)
+            }label:{
+                Text("SIGN UP")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(width: 220, height: 60)
+                    .background(Color.green)
+                    .cornerRadius(15.0)
+            }.alert(isPresented: $status){
+                Alert(
+                    title: Text("User Details"),
+                    message: Text("\(mess)"),
+                    primaryButton: .cancel(Text("Cancel")),
+                    secondaryButton: .destructive(Text("Okay")){
+                        withAnimation(.interpolatingSpring(stiffness: 20, damping: 20)) {
+                            animationAmount += 360
+                        }
+                    }
+                )
+            }.rotation3DEffect(.degrees(animationAmount), axis: (x: 10, y: 10, z: 30))
+        }
+        .padding()
+    }
+    
+    func getuserRegistration(FirNam: String,SecNam: String, EmaID: String, Pass: String, ConPass:String){
+        
+        
+        
+        
+        let urlRegister = "https://apponedemo.top/vouwch/api/register"
+        
+        
+        let dictRegister = ["user_type": "1", "first_name": FirNam, "last_name": SecNam, "email": EmaID, "password": Pass, "confirm_password": ConPass, "device_type": "IOS", "device_token": "Personal"] as [String : String]
+      //  print(dictRegister)
+        Alamofire.request( urlRegister, method: .post, parameters: dictRegister)
+            .responseJSON {  [self]  request in
+                
+                let json = try! JSON(data: request.data!)
+                status = json["status"].bool!
+                mess = json["message"].string!
+                
+//                if status {
+//                    isLoggedIn = true
+//                }
+                
+                print(json)
+                status = true
             }
-        }.ignoresSafeArea()
-        
-        
-    };
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
